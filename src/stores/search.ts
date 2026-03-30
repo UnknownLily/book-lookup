@@ -186,6 +186,18 @@ export const useSearchStore = defineStore('search', () => {
     return true
   }
 
+  function setTagAsOnlyDraftFilter(field: string, value: string): boolean {
+    if (!isListFilterKey(field)) {
+      return false
+    }
+
+    const nextCriteria = createDefaultCriteria()
+    nextCriteria[field] = [value]
+    draftCriteria.value = nextCriteria
+
+    return true
+  }
+
   function removeTagFromDraft(field: string, value: string): boolean {
     if (!isListFilterKey(field)) {
       return false
@@ -373,6 +385,7 @@ export const useSearchStore = defineStore('search', () => {
     updateListFilter,
     setViewMode,
     addTagToDraft,
+    setTagAsOnlyDraftFilter,
     removeTagFromDraft,
     loadMore,
     applyDraft,

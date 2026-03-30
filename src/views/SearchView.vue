@@ -72,7 +72,7 @@ function handleTagAdd(tag: SearchTag): void {
 }
 
 function handleTagSet(tag: SearchTag): void {
-  store.addTagToDraft(tag.field, tag.value, true)
+  store.setTagAsOnlyDraftFilter(tag.field, tag.value)
 }
 
 function handleQuickTagAdd(tag: SearchTag): void {
