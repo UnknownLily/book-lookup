@@ -4,6 +4,7 @@ import {
   isRangeAtDefault,
   hasActiveCriteria,
   type ApiCriteriaPayload,
+  type CountResponse,
   type ItemField,
   type QueryResponse,
   type RangeFilterKey,
@@ -78,26 +79,12 @@ function createPrintPayload(): ApiCriteriaPayload {
   return Object.fromEntries(PRINT_FIELDS.map((field) => [field, null])) as ApiCriteriaPayload
 }
 
-function mapCommercialCriteria(values: string[]): string[] | null {
-  const mapped: string[] = []
-
-  if (values.includes('商业向')) {
-    mapped.push('true')
-  }
-
-  if (values.includes('非商业')) {
-    mapped.push('false')
-  }
-
-  return mapped.length === 0 || mapped.length === 2 ? null : mapped
-}
-
-export function toApiCriteria(criteria: SearchCriteriaDraft): ApiCriteriaPayload | null {
+function createCriteriaPayload(criteria: SearchCriteriaDraft, options: { includePrintFields: boolean }): ApiCriteriaPayload | null {
   if (!hasActiveCriteria(criteria)) {
     return null
   }
 
-  const payload = createPrintPayload()
+  const payload = options.includePrintFields ? createPrintPayload() : {}
 
   if (criteria.keyword.trim()) {
     payload.searchkey = [criteria.keyword.trim()]
@@ -117,6 +104,28 @@ export function toApiCriteria(criteria: SearchCriteriaDraft): ApiCriteriaPayload
   }
 
   return payload
+}
+
+function mapCommercialCriteria(values: string[]): string[] | null {
+  const mapped: string[] = []
+
+  if (values.includes('商业向')) {
+    mapped.push('true')
+  }
+
+  if (values.includes('非商业')) {
+    mapped.push('false')
+  }
+
+  return mapped.length === 0 || mapped.length === 2 ? null : mapped
+}
+
+export function toApiCriteria(criteria: SearchCriteriaDraft): ApiCriteriaPayload | null {
+  return createCriteriaPayload(criteria, { includePrintFields: true })
+}
+
+function toCountCriteria(criteria: SearchCriteriaDraft): ApiCriteriaPayload | null {
+  return createCriteriaPayload(criteria, { includePrintFields: false })
 }
 
 export async function fetchSearchPage(
@@ -146,4 +155,28 @@ export async function fetchSearchPage(
   }
 
   return (await response.json()) as QueryResponse
+}
+
+export async function fetchSearchCount(criteria: SearchCriteriaDraft, options: { signal?: AbortSignal } = {}): Promise<CountResponse> {
+  const payload = toCountCriteria(criteria)
+
+  if (!payload) {
+    throw new LocalizedError(createMessage('errors.atLeastOneCriteria'))
+  }
+
+  const response = await fetch(buildApiUrl('/count?mode=book'), {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    signal: options.signal,
+    headers: {
+      Accept: 'application/json,text/plain,*/*',
+      'Content-Type': 'application/json;charset=UTF-8',
+    },
+  })
+
+  if (!response.ok) {
+    throw new LocalizedError(createMessage('errors.apiRequestFailed', { status: response.status }))
+  }
+
+  return (await response.json()) as CountResponse
 }

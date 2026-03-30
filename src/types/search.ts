@@ -156,6 +156,13 @@ export interface QueryResponse {
   version: number
 }
 
+export interface CountResponse {
+  count: number
+  hash: string
+  query: string
+  time: number
+}
+
 export type ApiCriteriaPayload = Partial<Record<ItemField, string[] | null>>
 
 export const RANGE_BOUNDS: Record<RangeFilterKey, { min: number; max: number }> = {

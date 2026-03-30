@@ -1,7 +1,7 @@
 import { computed, ref, shallowRef } from 'vue'
 import { defineStore } from 'pinia'
 import type { LocationQuery } from 'vue-router'
-import { fetchSearchPage } from '../services/searchApi'
+import { fetchSearchCount, fetchSearchPage } from '../services/searchApi'
 import { adaptSearchResult } from '../services/searchAdapters'
 import {
   KeywordResolutionError,
@@ -220,10 +220,20 @@ export const useSearchStore = defineStore('search', () => {
       effectiveCriteria.value = cloneCriteria(resolution.criteria)
       noticeState.value = resolution.noticeMessage
 
-      const response = await fetchSearchPage(resolution.criteria, { limit: PAGE_SIZE, offset: 0, signal: controller.signal })
+      const [pageResult, countResult] = await Promise.allSettled([
+        fetchSearchPage(resolution.criteria, { limit: PAGE_SIZE, offset: 0, signal: controller.signal }),
+        fetchSearchCount(resolution.criteria, { signal: controller.signal }),
+      ])
       if (activeRequestId.value !== requestId) {
         return
       }
+
+      if (pageResult.status === 'rejected') {
+        throw pageResult.reason
+      }
+
+      const response = pageResult.value
+      const resolvedTotalCount = countResult.status === 'fulfilled' ? countResult.value.count : response.results.length
 
       appliedCriteria.value = cloneCriteria(resolution.criteria)
       if (JSON.stringify(buildSearchRouteQuery(draftCriteria.value, viewMode.value)) === submittedSignature) {
@@ -231,7 +241,7 @@ export const useSearchStore = defineStore('search', () => {
       }
 
       rawResults.value = response.results
-      totalCount.value = response.count
+      totalCount.value = resolvedTotalCount
       nextOffset.value = response.results.length
       more.value = response.more
       status.value = response.results.length > 0 ? 'success' : 'empty'
@@ -287,7 +297,6 @@ export const useSearchStore = defineStore('search', () => {
       }
 
       rawResults.value = [...rawResults.value, ...response.results]
-      totalCount.value = response.count
       nextOffset.value += response.results.length
       more.value = response.more
       status.value = results.value.length > 0 ? 'success' : 'empty'
