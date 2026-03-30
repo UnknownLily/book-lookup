@@ -18,6 +18,8 @@ const router = useRouter()
 const mobileFiltersOpen = ref(false)
 const hasActiveSearch = computed(() => Object.keys(route.query).some((key) => key !== 'view'))
 
+type NavigationMode = 'push' | 'replace'
+
 const statusBanner = computed(() => {
   if (store.isRefreshing) {
     return {
@@ -46,25 +48,29 @@ const statusBanner = computed(() => {
   return null
 })
 
-async function syncUrl(): Promise<void> {
-  await router.replace({ query: store.routeQuery })
+async function syncUrl(mode: NavigationMode): Promise<void> {
+  if (routeQuerySignature(route.query) === routeQuerySignature(store.routeQuery)) {
+    return
+  }
+
+  await router[mode]({ query: store.routeQuery })
 }
 
 async function applyFilters(): Promise<void> {
   await store.applyDraft()
   mobileFiltersOpen.value = false
-  await syncUrl()
+  await syncUrl('push')
 }
 
 async function clearFilters(): Promise<void> {
   await store.clearAll()
   mobileFiltersOpen.value = false
-  await syncUrl()
+  await syncUrl('push')
 }
 
 async function updateViewMode(mode: ViewMode): Promise<void> {
   store.setViewMode(mode)
-  await syncUrl()
+  await syncUrl('replace')
 }
 
 function handleTagAdd(tag: SearchTag): void {
