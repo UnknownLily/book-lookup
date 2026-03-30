@@ -14,7 +14,7 @@ import {
 } from '../types/search'
 import { getCurrentIntlLocale as getIntlLocale, t as translate } from '../i18n'
 
-const HIDDEN_FIELDS = new Set<ItemField | string>(['id', 'self', 'name', 'alias', 'searchkey', 'cover', 'cover2x', 'cover3x', 'official', 'website'])
+const HIDDEN_FIELDS = new Set<ItemField | string>(['id', 'self', 'name', 'alias', 'searchkey', 'cover', 'cover2x', 'cover3x', 'official', 'website', 'pages'])
 const PRIMARY_TAG_FIELDS: ItemField[] = ['circle', 'publisher', 'event', 'type', 'coverchar', 'character', 'rate', 'region']
 const DETAIL_FIELD_ORDER: ItemField[] = [
   'circle',
@@ -109,11 +109,14 @@ function buildTags(item: RawItem, field: ItemField): SearchTag[] {
 }
 
 function buildDetailSections(item: RawItem): SearchDetailSection[] {
-  return DETAIL_FIELD_ORDER.map((field) => ({
+  return DETAIL_FIELD_ORDER
+    .filter((field) => field !== 'eventname' || !item.event?.length)
+    .map((field) => ({
     key: field,
     label: getFieldLabel(field),
     tags: buildTags(item, field),
-  })).filter((section) => section.tags.length > 0)
+    }))
+    .filter((section) => section.tags.length > 0)
 }
 
 function buildPrimaryTags(item: RawItem): SearchTag[] {
@@ -153,7 +156,6 @@ export function adaptSearchResult(item: RawItem): SearchResultItem {
   const meta = [
     item.year?.[0] ? translate('searchResult.metaYear', { value: item.year[0] }) : null,
     item.date?.[0] ? translate('searchResult.metaDate', { value: formatValue('_dat', item.date[0]) }) : null,
-    item.pages?.[0] ? translate('searchResult.metaPages', { value: item.pages[0] }) : null,
     eventLabel ? translate('searchResult.metaEvent', { value: eventLabel }) : null,
     getValues(item, 'rate')[0] ? translate('searchResult.metaRate', { value: getValues(item, 'rate')[0] }) : null,
     item.commercial?.[0] !== undefined

@@ -41,7 +41,7 @@ function setAsFilter(): void {
 </script>
 
 <template>
-  <v-menu v-model="open" location="bottom start">
+  <v-menu v-model="open" location="bottom start" content-class="tag-action-menu">
     <template #activator="{ props: activatorProps }">
       <v-chip
         v-bind="activatorProps"
@@ -100,6 +100,7 @@ function setAsFilter(): void {
 
 .tag-menu-list {
   border-radius: var(--search-menu-radius) !important;
+  background: rgb(255, 255, 255) !important;
 }
 
 .tag-menu-list :deep(.v-list-item) {
@@ -113,5 +114,43 @@ function setAsFilter(): void {
 
 .tag-chip--compact :deep(.v-chip__content) {
   padding-inline: 2px;
+}
+</style>
+
+<style>
+.tag-action-menu {
+  border-radius: var(--search-menu-radius);
+}
+
+.tag-action-menu .v-overlay__content,
+.tag-action-menu .v-list,
+.tag-action-menu .v-sheet {
+  background: rgb(255, 255, 255) !important;
+  color: rgba(31, 45, 51, 0.9) !important;
+}
+
+.tag-action-menu .v-list {
+  border: 1px solid rgba(var(--v-theme-primary), 0.12);
+  box-shadow:
+    0 14px 28px rgba(56, 44, 34, 0.08),
+    0 24px 44px rgba(56, 44, 34, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+.tag-action-menu .v-list-subheader,
+.tag-action-menu .v-divider {
+  background: transparent !important;
+}
+
+.tag-action-menu .v-list-item {
+  border-radius: 14px;
+}
+
+.tag-action-menu .v-list-item:hover {
+  background: rgba(227, 143, 167, 0.08) !important;
+}
+
+.tag-action-menu .v-list-item--active {
+  background: rgba(227, 143, 167, 0.12) !important;
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import TagActionMenu from './TagActionMenu.vue'
 import { getFieldLabel, type SearchResultItem, type SearchTag } from '../../types/search'
@@ -15,9 +15,23 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const cardRef = ref<HTMLElement | null>(null)
+const cardRef = ref<HTMLElement | { $el?: Element | null } | null>(null)
+const summaryRef = ref<HTMLElement | null>(null)
 const mobileExpanded = ref(false)
 const hasExpandableDetails = computed(() => props.item.detailSections.some((section) => section.tags.length > 0))
+let summaryResizeObserver: ResizeObserver | null = null
+
+function getCardElement(): HTMLElement | null {
+  if (cardRef.value instanceof HTMLElement) {
+    return cardRef.value
+  }
+
+  if (cardRef.value && '$el' in cardRef.value && cardRef.value.$el instanceof HTMLElement) {
+    return cardRef.value.$el
+  }
+
+  return null
+}
 
 function toggleMobileExpanded(): void {
   if (typeof window === 'undefined') {
@@ -32,7 +46,9 @@ function toggleMobileExpanded(): void {
 }
 
 function handlePointerDown(event: PointerEvent): void {
-  if (!mobileExpanded.value || !cardRef.value) {
+  const cardElement = getCardElement()
+
+  if (!mobileExpanded.value || !cardElement) {
     return
   }
 
@@ -41,7 +57,7 @@ function handlePointerDown(event: PointerEvent): void {
     return
   }
 
-  if (!cardRef.value.contains(target)) {
+  if (!cardElement.contains(target)) {
     mobileExpanded.value = false
   }
 }
@@ -56,6 +72,25 @@ function handleCollapseRequest(): void {
   if (mobileExpanded.value) {
     mobileExpanded.value = false
   }
+}
+
+function updateMobilePeekHeight(): void {
+  const cardElement = getCardElement()
+
+  if (typeof window === 'undefined' || !cardElement) {
+    return
+  }
+
+  if (!window.matchMedia('(max-width: 720px)').matches || !summaryRef.value) {
+    cardElement.style.removeProperty('--mobile-summary-height')
+    return
+  }
+
+  cardElement.style.setProperty('--mobile-summary-height', `${summaryRef.value.offsetHeight}px`)
+}
+
+function handleWindowResize(): void {
+  updateMobilePeekHeight()
 }
 
 function splitMetaLine(line: string): { label: string; value: string } {
@@ -92,21 +127,36 @@ watch(
 
 watch(
   () => props.item.id,
-  () => {
+  async () => {
     mobileExpanded.value = false
+    await nextTick()
+    updateMobilePeekHeight()
   },
 )
 
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('pointerdown', handlePointerDown)
   window.addEventListener('scroll', handleWindowScroll, { passive: true })
   window.addEventListener('search-card-collapse', handleCollapseRequest)
+  window.addEventListener('resize', handleWindowResize)
+
+  await nextTick()
+  updateMobilePeekHeight()
+
+  if (typeof ResizeObserver !== 'undefined' && summaryRef.value) {
+    summaryResizeObserver = new ResizeObserver(() => {
+      updateMobilePeekHeight()
+    })
+    summaryResizeObserver.observe(summaryRef.value)
+  }
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', handlePointerDown)
   window.removeEventListener('scroll', handleWindowScroll)
   window.removeEventListener('search-card-collapse', handleCollapseRequest)
+  window.removeEventListener('resize', handleWindowResize)
+  summaryResizeObserver?.disconnect()
 })
 
 async function detectCoverTone(coverUrl: string, currentToken: number): Promise<void> {
@@ -214,7 +264,7 @@ function sampleTopAreaLuminance(image: HTMLImageElement): number {
     <div class="card-body" aria-hidden="true"></div>
 
     <div class="card-hover">
-      <div class="card-summary" :class="{ 'card-summary--tappable': hasExpandableDetails }" tabindex="0" @click="toggleMobileExpanded" @keyup.enter="toggleMobileExpanded" @keyup.space.prevent="toggleMobileExpanded">
+      <div ref="summaryRef" class="card-summary" :class="{ 'card-summary--tappable': hasExpandableDetails }" tabindex="0" @click="toggleMobileExpanded" @keyup.enter="toggleMobileExpanded" @keyup.space.prevent="toggleMobileExpanded">
         <div class="card-heading">
           <h3>{{ item.title }}</h3>
           <p>{{ item.subtitle }}</p>
@@ -704,15 +754,15 @@ function sampleTopAreaLuminance(image: HTMLImageElement): number {
 
 @media (max-width: 720px) {
   .result-card {
-    --mobile-card-peek-height: 172px;
-    --mobile-card-expanded-max-height: 100%;
+    --mobile-summary-height: 146px;
+    --mobile-card-peek-height: calc(var(--mobile-summary-height) + 26px);
     --mobile-detail-max-height: min(52vh, 360px);
     --mobile-collapse-duration: 280ms;
     --mobile-collapse-easing: cubic-bezier(0.4, 0, 0.2, 1);
     --mobile-expand-duration: 200ms;
     --mobile-expand-easing: cubic-bezier(0.2, 0.9, 0.3, 1);
-    --card-summary-min-height: 164px;
-    --card-heading-height: 112px;
+    --card-summary-min-height: 0;
+    --card-heading-height: auto;
     --card-link-color: rgba(31, 45, 51, 0.82);
     --card-link-opacity: 0.78;
     --card-title-color: rgba(31, 45, 51, 0.94);
@@ -789,7 +839,7 @@ function sampleTopAreaLuminance(image: HTMLImageElement): number {
 
   .card-hover {
     min-height: var(--mobile-card-peek-height);
-    max-height: var(--mobile-card-expanded-max-height);
+    max-height: 100%;
     padding: 12px 12px 14px;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
@@ -811,6 +861,12 @@ function sampleTopAreaLuminance(image: HTMLImageElement): number {
     grid-template-rows: auto;
     min-height: 0;
     gap: 4px;
+  }
+
+  .card-heading {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
   }
 
   .card-summary--tappable {
