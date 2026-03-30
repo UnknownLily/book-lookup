@@ -1,0 +1,77 @@
+:root {
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  --search-input-radius: 24px;
+  --search-control-radius: 18px;
+  --search-menu-radius: 20px;
+  --theme-border-soft: rgba(var(--v-theme-primary), 0.16);
+  --theme-border-strong: rgba(var(--v-theme-primary), 0.26);
+  --theme-fill-soft: rgba(var(--v-theme-primary), 0.14);
+  --theme-fill-subtle: rgba(var(--v-theme-primary), 0.08);
+  --theme-fill-secondary: rgba(var(--v-theme-secondary), 0.14);
+  --surface-page-top: #fdf6f8;
+  --surface-page-mid: #faeff3;
+  --surface-page-bottom: #f6e9ee;
+  --surface-panel-strong: rgba(255, 249, 251, 0.98);
+  --surface-panel-soft: rgba(249, 238, 242, 0.94);
+  --surface-panel-muted: rgba(255, 247, 250, 0.92);
+  --text-strong: #1f2d33;
+  --text-soft: rgba(31, 45, 51, 0.72);
+  --text-muted: rgba(31, 45, 51, 0.58);
+  --shadow-elevated: 0 24px 48px rgba(56, 44, 34, 0.08);
+  --shadow-soft: 0 18px 36px rgba(56, 44, 34, 0.05);
+  --shadow-card-depth:
+    0 14px 28px rgba(56, 44, 34, 0.08),
+    0 32px 56px rgba(56, 44, 34, 0.06),
+    0 2px 6px rgba(255, 255, 255, 0.42) inset;
+  --shadow-card-depth-hover:
+    0 18px 36px rgba(56, 44, 34, 0.1),
+    0 40px 72px rgba(56, 44, 34, 0.08),
+    0 2px 8px rgba(255, 255, 255, 0.52) inset;
+  color: #1e2930;
+  background:
+    radial-gradient(circle at top left, rgba(245, 150, 170, 0.24), transparent 34%),
+    radial-gradient(circle at top right, rgba(243, 126, 153, 0.18), transparent 28%),
+    linear-gradient(180deg, var(--surface-page-top) 0%, var(--surface-page-mid) 42%, var(--surface-page-bottom) 100%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

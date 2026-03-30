@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">同人音乐专辑查询</title>
+  <desc id="desc">基于 THBWiki 数据的东方同人音乐专辑检索工具分享图</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff7fa" />
+      <stop offset="50%" stop-color="#f9e4eb" />
+      <stop offset="100%" stop-color="#f6d7e2" />
+    </linearGradient>
+    <radialGradient id="glowA" cx="0.15" cy="0.1" r="0.6">
+      <stop offset="0%" stop-color="#f596aa" stop-opacity="0.42" />
+      <stop offset="100%" stop-color="#f596aa" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="glowB" cx="0.9" cy="0.15" r="0.5">
+      <stop offset="0%" stop-color="#c77892" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#c77892" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#glowA)" />
+  <rect width="1200" height="630" fill="url(#glowB)" />
+
+  <g transform="translate(84 76)">
+    <rect x="0" y="0" width="186" height="42" rx="21" fill="#f4d5de" />
+    <text x="93" y="27" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="700" letter-spacing="2" fill="#8c4960">THB MUSIC LOOKUP</text>
+
+    <text x="0" y="128" font-family="Noto Serif SC, Source Han Serif SC, serif" font-size="74" font-weight="700" fill="#44222d">同人音乐专辑查询</text>
+    <text x="0" y="184" font-family="Noto Sans SC, Microsoft YaHei, sans-serif" font-size="28" fill="#654955">基于 THBWiki 数据的东方同人音乐专辑检索工具</text>
+    <text x="0" y="234" font-family="Noto Sans SC, Microsoft YaHei, sans-serif" font-size="26" fill="#654955">支持制作方、展会、年份、原曲、编曲、演唱等多维筛选</text>
+
+    <g transform="translate(0 304)">
+      <rect x="0" y="0" width="1020" height="178" rx="34" fill="#fffafc" fill-opacity="0.82" stroke="#eab8c7" stroke-opacity="0.82" />
+      <rect x="34" y="34" width="952" height="56" rx="18" fill="#ffffff" stroke="#f2c7d4" />
+      <circle cx="74" cy="62" r="12" fill="#f596aa" fill-opacity="0.22" />
+      <text x="102" y="70" font-family="Noto Sans SC, Microsoft YaHei, sans-serif" font-size="24" fill="#8d6875">输入制作方、原曲、参与者，快速归类筛选</text>
+
+      <g transform="translate(34 114)">
+        <rect x="0" y="0" width="146" height="34" rx="17" fill="#f7d9e2" />
+        <rect x="164" y="0" width="140" height="34" rx="17" fill="#f1d2dc" />
+        <rect x="328" y="0" width="132" height="34" rx="17" fill="#f7d9e2" />
+        <rect x="484" y="0" width="152" height="34" rx="17" fill="#f1d2dc" />
+        <rect x="660" y="0" width="166" height="34" rx="17" fill="#f7d9e2" />
+        <text x="73" y="23" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, sans-serif" font-size="18" fill="#875362">制作方</text>
+        <text x="234" y="23" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, sans-serif" font-size="18" fill="#875362">发售展会</text>
+        <text x="394" y="23" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, sans-serif" font-size="18" fill="#875362">发行年份</text>
+        <text x="560" y="23" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, sans-serif" font-size="18" fill="#875362">使用原曲</text>
+        <text x="743" y="23" text-anchor="middle" font-family="Noto Sans SC, Microsoft YaHei, sans-serif" font-size="18" fill="#875362">参与者字段</text>
+      </g>
+    </g>
+  </g>
+</svg>
