@@ -10,13 +10,14 @@ const props = defineProps<{
   quickTags: SearchTag[]
   summary: string[]
   totalCount: number
-  canSearch: boolean
   hasPendingChanges: boolean
   isLoading: boolean
   isRefreshing: boolean
 }>()
 
 const { t } = useI18n()
+
+const canApply = computed(() => props.hasPendingChanges)
 
 const statusBadgeText = computed(() => {
   if (props.hasPendingChanges) {
@@ -129,7 +130,9 @@ function handleKeywordEnter(): void {
     return
   }
 
-  emit('apply')
+  if (canApply.value) {
+    emit('apply')
+  }
 }
 
 function handleLocalePick(locale: SupportedLocale): void {
@@ -304,10 +307,11 @@ const emit = defineEmits<{
           {{ t('actions.filter') }}
         </v-btn>
 
-        <div class="status-pill-slot top-status-pill-slot">
-          <span v-if="statusBadgeText" class="pending-pill">{{ statusBadgeText }}</span>
-        </div>
       </div>
+    </div>
+
+    <div v-if="statusBadgeText" class="status-pill-row">
+      <span class="pending-pill">{{ statusBadgeText }}</span>
     </div>
 
     <div class="top-meta">
@@ -321,7 +325,7 @@ const emit = defineEmits<{
       <div class="status-panel">
         <span class="meta-text">{{ totalCount > 0 ? t('status.totalCount', { count: totalCount }) : t('status.readyToSearch') }}</span>
         <div class="status-actions">
-          <v-btn class="top-action-btn apply-action-btn" color="primary" :loading="isLoading" :disabled="!canSearch" @click="emit('apply')">
+          <v-btn class="top-action-btn apply-action-btn" color="primary" :loading="isLoading" :disabled="!canApply" @click="emit('apply')">
             {{ t('actions.applyFilters') }}
           </v-btn>
           <v-btn class="top-action-btn" variant="text" @click="emit('clear')">{{ t('actions.clearFilters') }}</v-btn>
@@ -684,10 +688,6 @@ const emit = defineEmits<{
   min-height: 2.75rem;
 }
 
-.top-status-pill-slot {
-  min-width: 0;
-}
-
 .top-meta {
   margin-top: 18px;
   padding-top: 18px;
@@ -724,6 +724,11 @@ const emit = defineEmits<{
 .meta-text {
   color: var(--text-muted);
   font-size: 0.92rem;
+}
+
+.status-pill-row {
+  margin-top: 16px;
+  display: flex;
 }
 
 .pending-pill {
@@ -805,16 +810,6 @@ const emit = defineEmits<{
     min-width: 0;
     width: 100%;
     min-height: 54px;
-  }
-
-  .top-status-pill-slot {
-    order: 3;
-    grid-column: 1 / -1;
-    width: 100%;
-  }
-
-  .top-status-pill-slot:empty {
-    display: none;
   }
 
   .intro-copy p {
@@ -928,11 +923,6 @@ const emit = defineEmits<{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .top-status-pill-slot {
-    grid-column: 1 / -1;
-    grid-row: 2;
   }
 
   .pending-pill {

@@ -109,7 +109,6 @@ export const useSearchStore = defineStore('search', () => {
   const activeController = shallowRef<AbortController | null>(null)
   const effectiveCriteria = ref<SearchCriteriaDraft>(createDefaultCriteria())
 
-  const canSearch = computed(() => hasActiveCriteria(draftCriteria.value))
   const hasPendingChanges = computed(
     () => JSON.stringify(buildSearchRouteQuery(draftCriteria.value, viewMode.value)) !== JSON.stringify(buildSearchRouteQuery(appliedCriteria.value, viewMode.value)),
   )
@@ -372,7 +371,6 @@ export const useSearchStore = defineStore('search', () => {
     errorMessage,
     noticeMessage,
     hasBootstrapped,
-    canSearch,
     hasPendingChanges,
     isInitialLoading,
     isRefreshing,

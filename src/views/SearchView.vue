@@ -133,7 +133,6 @@ useHead(
           :quick-tags="store.quickTags"
           :summary="store.appliedSummary"
           :total-count="store.totalCount"
-          :can-search="store.canSearch"
           :has-pending-changes="store.hasPendingChanges"
           :is-loading="store.status === 'loading'"
           :is-refreshing="store.isRefreshing"
@@ -195,7 +194,7 @@ useHead(
           </div>
           <div class="drawer-actions">
             <v-btn class="drawer-action-btn" variant="text" @click="mobileFiltersOpen = false">{{ t('actions.close') }}</v-btn>
-            <v-btn class="drawer-action-btn" color="primary" :loading="store.status === 'loading'" @click="applyFilters">{{ t('actions.applyFilters') }}</v-btn>
+            <v-btn class="drawer-action-btn" color="primary" :loading="store.status === 'loading'" :disabled="!store.hasPendingChanges" @click="applyFilters">{{ t('actions.applyFilters') }}</v-btn>
           </div>
         </div>
       </v-navigation-drawer>

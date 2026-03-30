@@ -165,6 +165,7 @@ onBeforeUnmount(() => {
       <div v-if="isLoadingMore" class="load-more-state">
         <v-progress-circular color="primary" indeterminate />
         <span>{{ t('status.loadingMore') }}</span>
+        <span class="load-more-count">{{ t('status.returnedCount', { shown: results.length, total: totalCount }) }}</span>
       </div>
     </template>
   </section>
@@ -387,8 +388,14 @@ onBeforeUnmount(() => {
   gap: 12px;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
   color: rgba(31, 45, 51, 0.66);
   padding: 12px 0 24px;
+}
+
+.load-more-count {
+  color: rgba(31, 45, 51, 0.58);
+  font-size: 0.92rem;
 }
 
 @media (max-width: 720px) {
