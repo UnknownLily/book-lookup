@@ -331,6 +331,16 @@ export function normalizeTextList(values: string[]): string[] {
     })
 }
 
+export function normalizeListFilterSelection(key: ListFilterKey, values: string[]): string[] {
+  const normalized = normalizeTextList(values)
+
+  if (key === 'rate' && normalized.length === 0) {
+    return [...DEFAULT_RATE_VALUES]
+  }
+
+  return normalized
+}
+
 export function isRangeAtDefault(key: RangeFilterKey, value: [number, number]): boolean {
   return value[0] === RANGE_BOUNDS[key].min && value[1] === RANGE_BOUNDS[key].max
 }

@@ -20,7 +20,7 @@ import {
   hasActiveCriteria,
   isListAtDefault,
   isListFilterKey,
-  normalizeTextList,
+  normalizeListFilterSelection,
   summarizeCriteria,
   type ListFilterKey,
   type RangeFilterKey,
@@ -169,7 +169,7 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function updateListFilter(key: ListFilterKey, value: string[]): void {
-    draftCriteria.value[key] = normalizeTextList(value)
+    draftCriteria.value[key] = normalizeListFilterSelection(key, value)
   }
 
   function setViewMode(mode: ViewMode): void {
@@ -183,7 +183,7 @@ export const useSearchStore = defineStore('search', () => {
 
     draftCriteria.value[field] = replace
       ? [value]
-      : normalizeTextList([...draftCriteria.value[field], value])
+      : normalizeListFilterSelection(field, [...draftCriteria.value[field], value])
 
     return true
   }
@@ -194,7 +194,7 @@ export const useSearchStore = defineStore('search', () => {
     }
 
     const nextCriteria = createDefaultCriteria()
-    nextCriteria[field] = [value]
+    nextCriteria[field] = normalizeListFilterSelection(field, [value])
     draftCriteria.value = nextCriteria
 
     return true

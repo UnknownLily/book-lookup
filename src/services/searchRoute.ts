@@ -5,7 +5,7 @@ import {
   cloneCriteria,
   createDefaultCriteria,
   isListAtDefault,
-  normalizeTextList,
+  normalizeListFilterSelection,
   type SearchCriteriaDraft,
   type ViewMode,
 } from '../types/search'
@@ -31,12 +31,12 @@ function parseRange(value: string | null, fallback: [number, number]): [number, 
   return [start, end]
 }
 
-function parseList(value: string | null): string[] {
+function parseList(key: (typeof LIST_FILTER_KEYS)[number], value: string | null): string[] {
   if (!value) {
-    return []
+    return normalizeListFilterSelection(key, [])
   }
 
-  return normalizeTextList(value.split(','))
+  return normalizeListFilterSelection(key, value.split(','))
 }
 
 export function parseSearchRouteQuery(query: LocationQuery): { criteria: SearchCriteriaDraft; viewMode: ViewMode } {
@@ -51,7 +51,7 @@ export function parseSearchRouteQuery(query: LocationQuery): { criteria: SearchC
 
   for (const key of LIST_FILTER_KEYS) {
     if (Object.prototype.hasOwnProperty.call(query, key)) {
-      criteria[key] = parseList(pickFirst(query[key]))
+      criteria[key] = parseList(key, pickFirst(query[key]))
     }
   }
 

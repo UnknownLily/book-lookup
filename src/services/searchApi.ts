@@ -3,6 +3,7 @@ import {
   RANGE_BOUNDS,
   isRangeAtDefault,
   hasActiveCriteria,
+  normalizeListFilterSelection,
   type ApiCriteriaPayload,
   type CountResponse,
   type ItemField,
@@ -98,8 +99,10 @@ function createCriteriaPayload(criteria: SearchCriteriaDraft, options: { include
   }
 
   for (const key of LIST_FILTER_KEYS) {
-    if (criteria[key].length > 0) {
-      payload[key as ItemField] = key === 'commercial' ? mapCommercialCriteria(criteria[key]) : [...criteria[key]]
+    const normalizedValues = normalizeListFilterSelection(key, criteria[key])
+
+    if (normalizedValues.length > 0) {
+      payload[key as ItemField] = key === 'commercial' ? mapCommercialCriteria(normalizedValues) : [...normalizedValues]
     }
   }
 
