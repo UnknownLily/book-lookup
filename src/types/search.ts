@@ -232,7 +232,7 @@ const FILTER_VALUE_LABEL_KEYS: Partial<Record<ListFilterKey, Record<string, stri
   },
   region: {
     日本: 'filters.options.region.日本',
-    中国: 'filters.options.region.中国',
+    中国大陆: 'filters.options.region.中国大陆',
     台湾: 'filters.options.region.台湾',
     香港: 'filters.options.region.香港',
     韩国: 'filters.options.region.韩国',

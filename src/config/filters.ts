@@ -81,7 +81,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
       { key: 'size', type: 'taglist', items: [], hintKey: 'filters.hints.size' },
       { key: 'number', type: 'taglist', items: [], hintKey: 'filters.hints.number' },
       { key: 'rate', type: 'checklist', items: ['一般向', 'R15', 'R18'] },
-      { key: 'region', type: 'checklist', items: ['日本', '中国', '台湾', '香港', '韩国', '美国', '英国', '德国', '加拿大'] },
+      { key: 'region', type: 'checklist', items: ['日本', '中国大陆', '台湾', '香港', '韩国', '美国', '英国', '德国', '加拿大'] },
     ],
   },
   {
