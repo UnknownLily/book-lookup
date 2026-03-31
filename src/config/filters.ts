@@ -29,6 +29,24 @@ function formatDuration(value: number): string {
   return value.toString()
 }
 
+export const BOOK_TYPE_OPTIONS = [
+  '漫画',
+  '画集',
+  '设定集',
+  '评论志',
+  '绘本',
+  '小说',
+  '歌词本',
+  '合同志',
+  '摄影集',
+  '总集',
+  '其他',
+  '乐谱',
+  '场刊',
+  '诗集',
+  '剧本',
+] as const
+
 export const FILTER_GROUPS: FilterGroup[] = [
   {
     id: 'timeline',
@@ -59,7 +77,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
     titleKey: 'filters.groups.bibliography.title',
     descriptionKey: 'filters.groups.bibliography.description',
     filters: [
-      { key: 'type', type: 'taglist', items: [], hintKey: 'filters.hints.type' },
+      { key: 'type', type: 'checklist', items: [...BOOK_TYPE_OPTIONS], hintKey: 'filters.hints.type' },
       { key: 'size', type: 'taglist', items: [], hintKey: 'filters.hints.size' },
       { key: 'number', type: 'taglist', items: [], hintKey: 'filters.hints.number' },
       { key: 'rate', type: 'checklist', items: ['一般向', 'R15', 'R18'] },
