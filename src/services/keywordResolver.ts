@@ -40,7 +40,7 @@ export class KeywordResolutionError extends Error {
 }
 
 const REMOTE_RESOLUTION_KEYS: ListFilterKey[] = ['circle', 'event', 'coverchar']
-const SUGGESTION_PRIORITY: ListFilterKey[] = ['circle', 'publisher', 'event', 'coverchar', 'character', 'eventname', 'session', 'type', 'size', 'number', 'rate', 'region', 'commercial']
+const SUGGESTION_PRIORITY: ListFilterKey[] = ['circle', 'event', 'coverchar', 'character', 'eventname', 'session', 'type', 'size', 'number', 'rate', 'region']
 
 function normalizeTerm(value: string): string {
   return value.trim().toLocaleLowerCase('zh-CN')

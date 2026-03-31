@@ -102,25 +102,11 @@ function createCriteriaPayload(criteria: SearchCriteriaDraft, options: { include
     const normalizedValues = normalizeListFilterSelection(key, criteria[key])
 
     if (normalizedValues.length > 0) {
-      payload[key as ItemField] = key === 'commercial' ? mapCommercialCriteria(normalizedValues) : [...normalizedValues]
+      payload[key as ItemField] = [...normalizedValues]
     }
   }
 
   return payload
-}
-
-function mapCommercialCriteria(values: string[]): string[] | null {
-  const mapped: string[] = []
-
-  if (values.includes('商业向')) {
-    mapped.push('true')
-  }
-
-  if (values.includes('非商业')) {
-    mapped.push('false')
-  }
-
-  return mapped.length === 0 || mapped.length === 2 ? null : mapped
 }
 
 export function toApiCriteria(criteria: SearchCriteriaDraft): ApiCriteriaPayload | null {

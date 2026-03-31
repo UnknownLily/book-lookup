@@ -65,11 +65,9 @@ export const FILTER_GROUPS: FilterGroup[] = [
     descriptionKey: 'filters.groups.publishing.description',
     filters: [
       { key: 'circle', type: 'taglist', items: [], hintKey: 'filters.hints.circle', suggestionSource: '制作方建议' },
-      { key: 'publisher', type: 'taglist', items: [], hintKey: 'filters.hints.publisher' },
       { key: 'event', type: 'taglist', items: [], hintKey: 'filters.hints.event', suggestionSource: '发售展会建议' },
       { key: 'eventname', type: 'taglist', items: [], hintKey: 'filters.hints.eventname' },
       { key: 'session', type: 'taglist', items: [], hintKey: 'filters.hints.session' },
-      { key: 'commercial', type: 'checklist', items: ['商业向', '非商业'] },
     ],
   },
   {
@@ -90,7 +88,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
     descriptionKey: 'filters.groups.characters.description',
     filters: [
       { key: 'coverchar', type: 'taglist', items: [], hintKey: 'filters.hints.coverchar', suggestionSource: '封面角色建议' },
-      { key: 'character', type: 'taglist', items: [], hintKey: 'filters.hints.character' },
+      { key: 'character', type: 'taglist', items: [], hintKey: 'filters.hints.character', suggestionSource: '封面角色建议' },
     ],
   },
 ]

@@ -5,11 +5,9 @@ import { t } from '../i18n'
 export const RANGE_FILTER_KEYS = ['establish', 'year', 'pages', 'covercharnum'] as const
 export const LIST_FILTER_KEYS = [
   'circle',
-  'publisher',
   'event',
   'eventname',
   'session',
-  'commercial',
   'type',
   'size',
   'number',
@@ -30,11 +28,9 @@ export interface SearchCriteriaDraft {
   pages: [number, number]
   covercharnum: [number, number]
   circle: string[]
-  publisher: string[]
   event: string[]
   eventname: string[]
   session: string[]
-  commercial: string[]
   type: string[]
   size: string[]
   number: string[]
@@ -180,11 +176,9 @@ const FIELD_LABEL_KEYS: Record<string, string> = {
   pages: 'fields.pages',
   covercharnum: 'fields.covercharnum',
   circle: 'fields.circle',
-  publisher: 'fields.publisher',
   event: 'fields.event',
   eventname: 'fields.eventname',
   session: 'fields.session',
-  commercial: 'fields.commercial',
   type: 'fields.type',
   size: 'fields.size',
   number: 'fields.number',
@@ -204,10 +198,6 @@ const FIELD_LABEL_KEYS: Record<string, string> = {
 }
 
 const FILTER_VALUE_LABEL_KEYS: Partial<Record<ListFilterKey, Record<string, string>>> = {
-  commercial: {
-    商业向: 'filters.options.commercial.商业向',
-    非商业: 'filters.options.commercial.非商业',
-  },
   type: {
     漫画: 'filters.options.type.漫画',
     画集: 'filters.options.type.画集',
@@ -265,11 +255,9 @@ export function createDefaultCriteria(): SearchCriteriaDraft {
     pages: [RANGE_BOUNDS.pages.min, RANGE_BOUNDS.pages.max],
     covercharnum: [RANGE_BOUNDS.covercharnum.min, RANGE_BOUNDS.covercharnum.max],
     circle: [],
-    publisher: [],
     event: [],
     eventname: [],
     session: [],
-    commercial: [],
     type: [],
     size: [],
     number: [],
@@ -296,11 +284,9 @@ export function cloneCriteria(criteria: SearchCriteriaDraft): SearchCriteriaDraf
     pages: [...criteria.pages] as [number, number],
     covercharnum: [...criteria.covercharnum] as [number, number],
     circle: [...criteria.circle],
-    publisher: [...criteria.publisher],
     event: [...criteria.event],
     eventname: [...criteria.eventname],
     session: [...criteria.session],
-    commercial: [...criteria.commercial],
     type: [...criteria.type],
     size: [...criteria.size],
     number: [...criteria.number],

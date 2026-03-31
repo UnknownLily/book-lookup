@@ -14,11 +14,10 @@ import {
 } from '../types/search'
 import { getCurrentIntlLocale as getIntlLocale, t as translate } from '../i18n'
 
-const HIDDEN_FIELDS = new Set<ItemField | string>(['id', 'self', 'name', 'alias', 'searchkey', 'cover', 'cover2x', 'cover3x', 'official', 'website', 'pages'])
-const PRIMARY_TAG_FIELDS: ItemField[] = ['circle', 'publisher', 'event', 'type', 'coverchar', 'character', 'rate', 'region']
+const HIDDEN_FIELDS = new Set<ItemField | string>(['id', 'self', 'name', 'alias', 'searchkey', 'cover', 'cover2x', 'cover3x', 'official', 'website', 'pages', 'publisher', 'commercial'])
+const PRIMARY_TAG_FIELDS: ItemField[] = ['circle', 'event', 'type', 'coverchar', 'character', 'rate', 'region']
 const DETAIL_FIELD_ORDER: ItemField[] = [
   'circle',
-  'publisher',
   'event',
   'eventname',
   'session',
@@ -26,7 +25,6 @@ const DETAIL_FIELD_ORDER: ItemField[] = [
   'size',
   'number',
   'pages',
-  'commercial',
   'rate',
   'region',
   'establish',
@@ -51,7 +49,7 @@ function formatValue(typeId: DataTypeId, value: DataValueMap[DataTypeId]): strin
     case '_num':
       return (value as DataValueMap['_num']).toString(10)
     case '_boo':
-      return (value as DataValueMap['_boo']) ? translate('filters.options.commercial.商业向') : translate('filters.options.commercial.非商业')
+      return (value as DataValueMap['_boo']) ? 'true' : 'false'
     case '_dat':
       return new Date(normalizeDateTimestamp(value as DataValueMap['_dat'])).toLocaleDateString(getIntlLocale())
     case '_lin': {
@@ -148,8 +146,7 @@ function buildLinks(item: RawItem): SearchResultLink[] {
 export function adaptSearchResult(item: RawItem): SearchResultItem {
   const title = item.name?.[0] ?? (item.self.displaytitle || item.self.fulltext)
   const circles = getValues(item, 'circle')
-  const publishers = getValues(item, 'publisher')
-  const subtitle = circles.join(' / ') || publishers.join(' / ') || translate('searchResult.subtitleFallback')
+  const subtitle = circles.join(' / ') || translate('searchResult.subtitleFallback')
   const secondaryNames = getValues(item, 'alias').filter((value) => value !== title)
   const coverUrl = item.cover3x?.[0]?.fullurl ?? item.cover2x?.[0]?.fullurl ?? item.cover?.[0]?.fullurl ?? null
   const eventLabel = getValues(item, 'eventname')[0] || getValues(item, 'event')[0]
@@ -158,9 +155,6 @@ export function adaptSearchResult(item: RawItem): SearchResultItem {
     item.date?.[0] ? translate('searchResult.metaDate', { value: formatValue('_dat', item.date[0]) }) : null,
     eventLabel ? translate('searchResult.metaEvent', { value: eventLabel }) : null,
     getValues(item, 'rate')[0] ? translate('searchResult.metaRate', { value: getValues(item, 'rate')[0] }) : null,
-    item.commercial?.[0] !== undefined
-        ? translate('searchResult.metaCommercial', { value: formatValue('_boo', item.commercial[0]) })
-      : null,
   ].filter((value): value is string => Boolean(value))
 
   return {

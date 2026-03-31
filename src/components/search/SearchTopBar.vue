@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { currentLocale, localeOptions, setLocale, type SupportedLocale } from '../../i18n'
 import { getKeywordSuggestions, type KeywordSuggestion } from '../../services/keywordResolver'
-import { getFieldLabel, getFilterValueLabel, type SearchTag } from '../../types/search'
+import { getFieldLabel, getFilterValueLabel, isListFilterKey, type SearchTag } from '../../types/search'
 
 const props = defineProps<{
   keyword: string
@@ -119,7 +119,7 @@ function handleSuggestionPick(item: KeywordSuggestion): void {
     field: item.key,
     label: item.fieldLabel,
     value: item.value,
-    filterable: true,
+    filterable: isListFilterKey(item.key),
   })
   emit('updateKeyword', '')
 }
@@ -250,7 +250,7 @@ const emit = defineEmits<{
             size="small"
             closable
             class="quick-tag-chip"
-            @click:close="emit('removeQuickTag', { field: item.key, label: item.fieldLabel, value: item.value, filterable: true })"
+            @click:close="emit('removeQuickTag', { field: item.key, label: item.fieldLabel, value: item.value, filterable: isListFilterKey(item.key) })"
           >
             {{ `${item.fieldLabel}：${getFilterValueLabel(item.key, item.value)}` }}
           </v-chip>
