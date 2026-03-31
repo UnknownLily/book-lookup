@@ -8,6 +8,7 @@ const zhHans = {
     introAfterLink: '抓取并整理同人志信息，支持按社团、展会、角色、页数和发行年份等条件快速筛选。',
     wikiAction: '前往 Wiki',
     noCover: '暂无封面',
+    coverLoadFailed: '封面加载失败',
     aliasPrefix: '译名',
   },
   locale: {
@@ -231,6 +232,7 @@ const zhHant = {
     introAfterLink: '抓取並整理同人誌資訊，支援按社團、展會、角色、頁數和發行年份等條件快速篩選。',
     wikiAction: '前往 Wiki',
     noCover: '暫無封面',
+    coverLoadFailed: '封面載入失敗',
     aliasPrefix: '譯名',
   },
   locale: {
@@ -454,6 +456,7 @@ const ja = {
     introAfterLink: ' から同人誌情報を取得・整理し、サークル、即売会、キャラクター、ページ数、発行年などの条件で素早く絞り込めます。',
     wikiAction: 'Wiki を開く',
     noCover: '表紙なし',
+    coverLoadFailed: '表紙の読み込みに失敗しました',
     aliasPrefix: '訳名',
   },
   locale: {
@@ -677,6 +680,7 @@ const en = {
     introAfterLink: ', with fast filtering by circle, convention, character, page count, release year, and more.',
     wikiAction: 'Open Wiki',
     noCover: 'No cover',
+    coverLoadFailed: 'Failed to load cover',
     aliasPrefix: 'Translated title',
   },
   locale: {

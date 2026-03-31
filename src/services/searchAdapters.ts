@@ -143,12 +143,25 @@ function buildLinks(item: RawItem): SearchResultLink[] {
   return links
 }
 
+function resolveCoverUrl(item: RawItem): string | null {
+  for (const field of ['cover3x', 'cover2x', 'cover'] as const) {
+    const rawValues = item[field] as DataValueMap['_wpg'][] | undefined
+    const coverValue = rawValues?.find((value) => value.exists && Boolean(value.fullurl))
+
+    if (coverValue?.fullurl) {
+      return coverValue.fullurl
+    }
+  }
+
+  return null
+}
+
 export function adaptSearchResult(item: RawItem): SearchResultItem {
   const title = item.name?.[0] ?? (item.self.displaytitle || item.self.fulltext)
   const circles = getValues(item, 'circle')
   const subtitle = circles.join(' / ') || translate('searchResult.subtitleFallback')
   const secondaryNames = getValues(item, 'alias').filter((value) => value !== title)
-  const coverUrl = item.cover3x?.[0]?.fullurl ?? item.cover2x?.[0]?.fullurl ?? item.cover?.[0]?.fullurl ?? null
+  const coverUrl = resolveCoverUrl(item)
   const eventLabel = getValues(item, 'eventname')[0] || getValues(item, 'event')[0]
   const meta = [
     item.year?.[0] ? translate('searchResult.metaYear', { value: item.year[0] }) : null,

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import CoverSurface from './CoverSurface.vue'
 import TagActionMenu from './TagActionMenu.vue'
 import { getFieldLabel, type SearchResultItem, type SearchTag } from '../../types/search'
 
@@ -16,7 +17,6 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const isDarkCover = ref(false)
-let toneAnalysisToken = 0
 
 function splitMetaLine(line: string): { label: string; value: string } {
   const firstSpaceIndex = line.indexOf(' ')
@@ -31,95 +31,8 @@ function splitMetaLine(line: string): { label: string; value: string } {
   }
 }
 
-watch(
-  () => props.item.coverUrl,
-  (coverUrl) => {
-    toneAnalysisToken += 1
-    const currentToken = toneAnalysisToken
-    isDarkCover.value = false
-
-    if (!coverUrl) {
-      return
-    }
-
-    void detectCoverTone(coverUrl, currentToken)
-  },
-  { immediate: true },
-)
-
-async function detectCoverTone(coverUrl: string, currentToken: number): Promise<void> {
-  try {
-    const image = await loadImageElement(coverUrl)
-    const luminance = sampleTopAreaLuminance(image)
-
-    if (currentToken !== toneAnalysisToken) {
-      return
-    }
-
-    isDarkCover.value = luminance < 118
-  } catch {
-    if (currentToken !== toneAnalysisToken) {
-      return
-    }
-
-    isDarkCover.value = false
-  }
-}
-
-function loadImageElement(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const image = new Image()
-    image.crossOrigin = 'anonymous'
-    image.decoding = 'async'
-    image.onload = () => resolve(image)
-    image.onerror = () => reject(new Error('image-load-failed'))
-    image.src = src
-  })
-}
-
-function sampleTopAreaLuminance(image: HTMLImageElement): number {
-  const canvas = document.createElement('canvas')
-  const width = 32
-  const height = 32
-  const sampleHeight = 18
-
-  canvas.width = width
-  canvas.height = height
-
-  const context = canvas.getContext('2d', { willReadFrequently: true })
-  if (!context) {
-    return 255
-  }
-
-  context.drawImage(image, 0, 0, width, height)
-  const { data } = context.getImageData(0, 0, width, sampleHeight)
-
-  let weightedLuminance = 0
-  let totalWeight = 0
-
-  for (let y = 0; y < sampleHeight; y += 1) {
-    const verticalWeight = 1.2 - y / sampleHeight / 2
-
-    for (let x = 0; x < width; x += 1) {
-      const index = (y * width + x) * 4
-      const alpha = data[index + 3] / 255
-
-      if (alpha <= 0) {
-        continue
-      }
-
-      const red = data[index]
-      const green = data[index + 1]
-      const blue = data[index + 2]
-      const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue
-      const weight = verticalWeight * alpha
-
-      weightedLuminance += luminance * weight
-      totalWeight += weight
-    }
-  }
-
-  return totalWeight > 0 ? weightedLuminance / totalWeight : 255
+function handleToneChange(value: boolean): void {
+  isDarkCover.value = value
 }
 </script>
 
@@ -136,10 +49,9 @@ function sampleTopAreaLuminance(image: HTMLImageElement): number {
       />
       <div class="list-cover-wash" aria-hidden="true" />
 
-      <div v-if="item.coverUrl" class="list-cover-frame">
-        <v-img :src="item.coverUrl" :alt="item.title" class="list-cover-image" contain height="156" />
+      <div class="list-cover-frame">
+        <CoverSurface :src="item.coverUrl" :alt="item.title" :title="item.title" variant="list" @tone-change="handleToneChange" />
       </div>
-      <div v-else class="list-cover-fallback">{{ t('app.noCover') }}</div>
     </div>
 
     <div class="list-body">
@@ -412,17 +324,8 @@ function sampleTopAreaLuminance(image: HTMLImageElement): number {
   place-items: center;
 }
 
-.list-cover-image {
+:deep(.cover-surface--list) {
   width: 100%;
-  max-width: 168px;
-}
-
-.list-cover-fallback {
-  height: 100%;
-  min-height: 156px;
-  display: grid;
-  place-items: center;
-  color: var(--text-muted);
 }
 
 .list-body {
@@ -580,13 +483,8 @@ function sampleTopAreaLuminance(image: HTMLImageElement): number {
     padding: 16px 16px 0;
   }
 
-  .list-cover-frame,
-  .list-cover-fallback {
+  .list-cover-frame {
     min-height: 144px;
-  }
-
-  .list-cover-image {
-    max-width: 152px;
   }
 
   .list-body {
@@ -681,13 +579,8 @@ function sampleTopAreaLuminance(image: HTMLImageElement): number {
     padding: 14px 14px 0;
   }
 
-  .list-cover-frame,
-  .list-cover-fallback {
+  .list-cover-frame {
     min-height: 132px;
-  }
-
-  .list-cover-image {
-    max-width: 136px;
   }
 
   .list-body {
