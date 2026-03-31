@@ -42,6 +42,14 @@ function toggleChipValue(key: ListFilterKey, option: string): void {
 function draftValues(key: ListFilterKey): string[] {
   return props.draftCriteria[key]
 }
+
+function getListFilterDescription(key: ListFilterKey, type: 'checklist' | 'taglist', hintKey?: string): string {
+  if (type === 'taglist' && hintKey) {
+    return t(hintKey)
+  }
+
+  return t('filters.selectedCount', { count: props.draftCriteria[key].length })
+}
 </script>
 
 <template>
@@ -95,7 +103,7 @@ function draftValues(key: ListFilterKey): string[] {
                 <div class="filter-head">
                   <div>
                     <h3>{{ getFieldLabel(filter.key) }}</h3>
-                    <p>{{ filter.hintKey ? t(filter.hintKey) : t('filters.selectedCount', { count: draftCriteria[filter.key].length }) }}</p>
+                    <p>{{ getListFilterDescription(filter.key, filter.type, filter.hintKey) }}</p>
                   </div>
                 </div>
 

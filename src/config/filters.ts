@@ -77,7 +77,7 @@ export const FILTER_GROUPS: FilterGroup[] = [
     titleKey: 'filters.groups.bibliography.title',
     descriptionKey: 'filters.groups.bibliography.description',
     filters: [
-      { key: 'type', type: 'checklist', items: [...BOOK_TYPE_OPTIONS], hintKey: 'filters.hints.type' },
+      { key: 'type', type: 'checklist', items: [...BOOK_TYPE_OPTIONS] },
       { key: 'size', type: 'taglist', items: [], hintKey: 'filters.hints.size' },
       { key: 'number', type: 'taglist', items: [], hintKey: 'filters.hints.number' },
       { key: 'rate', type: 'checklist', items: ['一般向', 'R15', 'R18'] },
