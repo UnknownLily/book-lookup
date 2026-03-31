@@ -24,10 +24,15 @@ const zhHans = {
     clearFilters: '清空筛选',
     close: '关闭',
     cancel: '取消',
+    confirmAndApply: '确认并应用',
     loadMore: '加载更多',
     copyText: '复制文本',
     addToFilters: '添加进筛选条件',
     setAsFilter: '设置为筛选条件',
+  },
+  dialogs: {
+    r18WarningTitle: 'R18 内容提醒',
+    r18WarningMessage: '您当前的筛选条件包含 R18 选项，后续查询结果可能包含仅限成年人浏览的内容。\n继续前请确认：您已年满 18 周岁，且访问相关内容不违反您所在地区适用的法律法规。如不符合上述条件，请取消并调整筛选条件。\n\n点击确认按钮或继续使用本工具，即表示您已知晓上述提醒。',
   },
   status: {
     pendingChanges: '有待应用的筛选变更',
@@ -250,10 +255,15 @@ const zhHant = {
     clearFilters: '清空篩選',
     close: '關閉',
     cancel: '取消',
+    confirmAndApply: '確認並套用',
     loadMore: '載入更多',
     copyText: '複製文字',
     addToFilters: '加入篩選條件',
     setAsFilter: '設為篩選條件',
+  },
+  dialogs: {
+    r18WarningTitle: 'R18 內容提醒',
+    r18WarningMessage: '您目前的篩選條件包含 R18 選項，後續查詢結果可能包含僅限成年人瀏覽的內容。繼續前請確認：您已年滿 18 歲，且存取相關內容不違反您所在地適用的法律法規。如不符合上述條件，請取消並調整篩選條件。\n\n點擊確認按鈕或繼續使用本工具，即表示您已知悉上述提醒。',
   },
   status: {
     pendingChanges: '有待套用的篩選變更',
@@ -476,10 +486,15 @@ const ja = {
     clearFilters: 'フィルターをクリア',
     close: '閉じる',
     cancel: 'キャンセル',
+    confirmAndApply: '確認して適用',
     loadMore: 'さらに読み込む',
     copyText: 'テキストをコピー',
     addToFilters: 'フィルターに追加',
     setAsFilter: 'この条件で絞り込む',
+  },
+  dialogs: {
+    r18WarningTitle: 'R18 コンテンツの注意',
+    r18WarningMessage: '現在のフィルター条件には R18 オプションが含まれており、今後の検索結果に成人向けコンテンツが含まれる可能性があります。続行する前に、18歳以上であり、当該コンテンツの閲覧が居住地域で適用される法令に反しないことを確認してください。これらの条件を満たさない場合は、キャンセルしてフィルター条件を調整してください。\n\n確認ボタンを押すか本ツールの利用を継続することで、上記の注意事項を確認済みであるものとみなされます。',
   },
   status: {
     pendingChanges: '未適用のフィルター変更があります',
@@ -702,10 +717,15 @@ const en = {
     clearFilters: 'Clear filters',
     close: 'Close',
     cancel: 'Cancel',
+    confirmAndApply: 'Confirm and apply',
     loadMore: 'Load more',
     copyText: 'Copy text',
     addToFilters: 'Add to filters',
     setAsFilter: 'Use as filter',
+  },
+  dialogs: {
+    r18WarningTitle: 'R18 content warning',
+    r18WarningMessage: 'Your current filters include the R18 option, and subsequent results may contain adult content intended only for adults. Before continuing, please confirm that you are at least 18 years old and that accessing such content does not violate the laws or regulations applicable in your location. If these conditions are not met, please cancel and adjust your filters.\n\nBy clicking the confirmation button or continuing to use this tool, you acknowledge that you have read the notice above.',
   },
   status: {
     pendingChanges: 'There are pending filter changes',

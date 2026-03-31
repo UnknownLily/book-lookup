@@ -165,6 +165,8 @@ export interface CountResponse {
 
 export type ApiCriteriaPayload = Partial<Record<ItemField, string[] | null>>
 
+const DEFAULT_RATE_VALUES = ['一般向'] as const
+
 export const RANGE_BOUNDS: Record<RangeFilterKey, { min: number; max: number }> = {
   establish: { min: 1990, max: 2035 },
   year: { min: 1990, max: 2035 },
@@ -271,11 +273,19 @@ export function createDefaultCriteria(): SearchCriteriaDraft {
     type: [],
     size: [],
     number: [],
-    rate: [],
+    rate: [...DEFAULT_RATE_VALUES],
     region: [],
     coverchar: [],
     character: [],
   }
+}
+
+function listValuesEqual(left: string[], right: string[]): boolean {
+  return left.length === right.length && left.every((value, index) => value === right[index])
+}
+
+export function isListAtDefault(key: ListFilterKey, value: string[]): boolean {
+  return listValuesEqual(value, createDefaultCriteria()[key])
 }
 
 export function cloneCriteria(criteria: SearchCriteriaDraft): SearchCriteriaDraft {
@@ -334,7 +344,7 @@ export function hasActiveCriteria(criteria: SearchCriteriaDraft): boolean {
     return true
   }
 
-  return LIST_FILTER_KEYS.some((key) => criteria[key].length > 0)
+  return LIST_FILTER_KEYS.some((key) => !isListAtDefault(key, criteria[key]))
 }
 
 export function summarizeCriteria(criteria: SearchCriteriaDraft): string[] {
@@ -352,7 +362,7 @@ export function summarizeCriteria(criteria: SearchCriteriaDraft): string[] {
   }
 
   for (const key of LIST_FILTER_KEYS) {
-    if (criteria[key].length > 0) {
+    if (!isListAtDefault(key, criteria[key])) {
       const values = criteria[key]
         .slice(0, 2)
         .map((value) => getFilterValueLabel(key, value))

@@ -3,6 +3,7 @@ import { useHead } from '@unhead/vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+import type { LocationQuery } from 'vue-router'
 import SearchFiltersPanel from '../components/search/SearchFiltersPanel.vue'
 import SearchResults from '../components/search/SearchResults.vue'
 import SearchTopBar from '../components/search/SearchTopBar.vue'
@@ -16,9 +17,33 @@ const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const mobileFiltersOpen = ref(false)
+const r18WarningOpen = ref(false)
+const hasAcknowledgedR18Warning = ref(false)
 const hasActiveSearch = computed(() => Object.keys(route.query).some((key) => key !== 'view'))
+const draftIncludesR18 = computed(() => store.draftCriteria.rate.includes('R18'))
 
 type NavigationMode = 'push' | 'replace'
+
+function routeIncludesR18(query: LocationQuery): boolean {
+  const rawRate = Array.isArray(query.rate) ? query.rate[0] ?? '' : query.rate ?? ''
+  return rawRate
+    .split(',')
+    .map((value) => value.trim())
+    .includes('R18')
+}
+
+async function initializeRouteState(query: LocationQuery): Promise<void> {
+  const shouldWarnForRoute = routeIncludesR18(query) && !hasAcknowledgedR18Warning.value
+
+  await store.initializeFromRoute(query, { runSearch: !shouldWarnForRoute })
+
+  if (shouldWarnForRoute) {
+    r18WarningOpen.value = true
+    return
+  }
+
+  r18WarningOpen.value = false
+}
 
 const statusBanner = computed(() => {
   if (store.isRefreshing) {
@@ -56,10 +81,25 @@ async function syncUrl(mode: NavigationMode): Promise<void> {
   await router[mode]({ query: store.routeQuery })
 }
 
-async function applyFilters(): Promise<void> {
+async function commitFilters(): Promise<void> {
   await store.applyDraft()
   mobileFiltersOpen.value = false
   await syncUrl('push')
+}
+
+async function applyFilters(): Promise<void> {
+  if (draftIncludesR18.value && !hasAcknowledgedR18Warning.value) {
+    r18WarningOpen.value = true
+    return
+  }
+
+  await commitFilters()
+}
+
+async function confirmR18Warning(): Promise<void> {
+  hasAcknowledgedR18Warning.value = true
+  r18WarningOpen.value = false
+  await commitFilters()
 }
 
 async function clearFilters(): Promise<void> {
@@ -100,7 +140,7 @@ function handleListUpdate(key: Parameters<typeof store.updateListFilter>[0], val
 
 onMounted(async () => {
   if (!store.hasBootstrapped) {
-    await store.initializeFromRoute(route.query)
+    await initializeRouteState(route.query)
   }
 })
 
@@ -112,7 +152,7 @@ watch(
     }
 
     if (routeQuerySignature(query) !== routeQuerySignature(store.routeQuery)) {
-      await store.initializeFromRoute(query)
+      await initializeRouteState(query)
     }
   },
   { deep: true },
@@ -204,6 +244,18 @@ useHead(
           </div>
         </div>
       </v-navigation-drawer>
+
+      <v-dialog v-model="r18WarningOpen" max-width="560">
+        <v-card rounded="xl" class="warning-dialog-card">
+          <v-card-title class="warning-dialog-title">{{ t('dialogs.r18WarningTitle') }}</v-card-title>
+          <v-card-text class="warning-dialog-text">{{ t('dialogs.r18WarningMessage') }}</v-card-text>
+          <v-card-actions class="warning-dialog-actions">
+            <v-spacer />
+            <v-btn class="warning-dialog-btn" variant="text" @click="r18WarningOpen = false">{{ t('actions.cancel') }}</v-btn>
+            <v-btn class="warning-dialog-btn warning-dialog-btn--primary" color="primary" variant="flat" @click="confirmR18Warning">{{ t('actions.confirmAndApply') }}</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-main>
   </v-app>
 </template>
@@ -340,6 +392,66 @@ useHead(
   border-radius: var(--search-control-radius);
 }
 
+.warning-dialog-card {
+  border: 1px solid var(--theme-border-soft);
+  background: linear-gradient(180deg, rgba(255, 251, 252, 0.98), rgba(255, 246, 248, 0.96));
+  box-shadow:
+    0 18px 36px rgba(56, 44, 34, 0.12),
+    0 30px 52px rgba(56, 44, 34, 0.08);
+}
+
+.warning-dialog-title {
+  padding: 28px 32px 0;
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', serif;
+  font-size: 1.85rem;
+  line-height: 1.2;
+  color: var(--text-strong);
+  white-space: normal;
+}
+
+.warning-dialog-text {
+  padding: 20px 32px 0;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text-soft);
+  white-space: pre-line;
+}
+
+.warning-dialog-actions {
+  padding: 24px 32px 28px;
+  gap: 12px;
+}
+
+.warning-dialog-btn {
+  min-height: 46px;
+  padding-inline: 18px;
+  border-radius: var(--search-control-radius);
+}
+
+.warning-dialog-btn :deep(.v-btn__overlay),
+.warning-dialog-btn :deep(.v-btn__underlay) {
+  border-radius: inherit;
+}
+
+.warning-dialog-btn--primary {
+  color: rgb(255, 250, 252) !important;
+  background: rgb(var(--v-theme-primary)) !important;
+  border: 1px solid rgba(var(--v-theme-primary), 0.96);
+  box-shadow: 0 10px 22px rgba(92, 52, 68, 0.22);
+}
+
+.warning-dialog-btn--primary:hover,
+.warning-dialog-btn--primary:focus-visible {
+  background: rgba(var(--v-theme-primary), 0.9) !important;
+  border-color: rgba(var(--v-theme-primary), 0.98);
+  box-shadow: 0 14px 28px rgba(92, 52, 68, 0.28);
+}
+
+.warning-dialog-btn--primary :deep(.v-btn__content),
+.warning-dialog-btn--primary :deep(.v-icon) {
+  color: inherit;
+}
+
 .drawer-action-btn :deep(.v-btn__overlay),
 .drawer-action-btn :deep(.v-btn__underlay) {
   border-radius: inherit;
@@ -421,6 +533,25 @@ useHead(
   .drawer-action-btn {
     width: 100%;
     min-height: 48px;
+  }
+
+  .warning-dialog-title {
+    padding: 24px 22px 0;
+    font-size: 1.55rem;
+  }
+
+  .warning-dialog-text {
+    padding: 16px 22px 0;
+    line-height: 1.72;
+  }
+
+  .warning-dialog-actions {
+    padding: 20px 22px 22px;
+    flex-wrap: wrap;
+  }
+
+  .warning-dialog-btn {
+    width: 100%;
   }
 }
 </style>

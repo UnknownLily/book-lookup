@@ -18,6 +18,7 @@ import {
   createDefaultCriteria,
   getFieldLabel,
   hasActiveCriteria,
+  isListAtDefault,
   isListFilterKey,
   normalizeTextList,
   summarizeCriteria,
@@ -132,12 +133,14 @@ export const useSearchStore = defineStore('search', () => {
   const quickTags = computed<SearchTag[]>(() => {
     currentLocale.value
     return QUICK_TAG_KEYS.flatMap((key) =>
-      draftCriteria.value[key].map((value) => ({
-        field: key,
-        label: getFieldLabel(key),
-        value,
-        filterable: true,
-      })),
+      isListAtDefault(key, draftCriteria.value[key])
+        ? []
+        : draftCriteria.value[key].map((value) => ({
+            field: key,
+            label: getFieldLabel(key),
+            value,
+            filterable: true,
+          })),
     )
   })
 
@@ -345,14 +348,17 @@ export const useSearchStore = defineStore('search', () => {
     resetResults()
   }
 
-  async function initializeFromRoute(query: LocationQuery): Promise<void> {
+  async function initializeFromRoute(query: LocationQuery, options: { runSearch?: boolean } = {}): Promise<void> {
     const parsed = parseSearchRouteQuery(query)
+    const shouldRunSearch = options.runSearch ?? true
+
+    cancelActiveRequest()
     draftCriteria.value = cloneCriteria(parsed.criteria)
     appliedCriteria.value = cloneCriteria(parsed.criteria)
     viewMode.value = parsed.viewMode
     hasBootstrapped.value = true
 
-    if (hasActiveCriteria(parsed.criteria)) {
+    if (shouldRunSearch && hasActiveCriteria(parsed.criteria)) {
       await runSearch(parsed.criteria)
       return
     }

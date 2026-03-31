@@ -4,6 +4,7 @@ import {
   RANGE_FILTER_KEYS,
   cloneCriteria,
   createDefaultCriteria,
+  isListAtDefault,
   normalizeTextList,
   type SearchCriteriaDraft,
   type ViewMode,
@@ -49,7 +50,9 @@ export function parseSearchRouteQuery(query: LocationQuery): { criteria: SearchC
   }
 
   for (const key of LIST_FILTER_KEYS) {
-    criteria[key] = parseList(pickFirst(query[key]))
+    if (Object.prototype.hasOwnProperty.call(query, key)) {
+      criteria[key] = parseList(pickFirst(query[key]))
+    }
   }
 
   const viewMode = pickFirst(query.view) === 'list' ? 'list' : 'card'
@@ -73,8 +76,8 @@ export function buildSearchRouteQuery(criteria: SearchCriteriaDraft, viewMode: V
   }
 
   for (const key of LIST_FILTER_KEYS) {
-    if (criteria[key].length > 0) {
-      query[key] = criteria[key].join(',')
+    if (!isListAtDefault(key, criteria[key])) {
+      query[key] = criteria[key].length > 0 ? criteria[key].join(',') : ''
     }
   }
 
