@@ -19,6 +19,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const coverState = ref<CoverState>(props.src ? 'loading' : 'empty')
+const sakuraPlaceholderSrc = '/sakura-flower-dashed.svg'
 let toneToken = 0
 
 const statusLabel = computed(() => {
@@ -37,13 +38,7 @@ const statusLabel = computed(() => {
   return props.alt
 })
 
-const placeholderIcon = computed(() => {
-  if (coverState.value === 'error') {
-    return '$coverMissing'
-  }
-
-  return '$noCover'
-})
+const isEmptyState = computed(() => coverState.value === 'empty')
 
 const placeholderText = computed(() => {
   if (coverState.value === 'error') {
@@ -120,7 +115,14 @@ function handleError(): void {
         <transition v-else name="cover-surface-state" mode="out-in">
           <div :key="coverState" class="cover-surface__status">
             <div class="cover-surface__glow" />
-            <v-icon class="cover-surface__icon" :icon="placeholderIcon" :size="variant === 'card' ? 58 : 42" />
+            <img
+              v-if="isEmptyState"
+              class="cover-surface__flower"
+              :class="{ 'cover-surface__flower--list': variant === 'list' }"
+              :src="sakuraPlaceholderSrc"
+              alt=""
+            >
+            <v-icon v-else class="cover-surface__icon" icon="$coverMissing" :size="variant === 'card' ? 58 : 42" />
             <span class="cover-surface__label">{{ placeholderText }}</span>
           </div>
         </transition>
@@ -270,6 +272,19 @@ function handleError(): void {
   z-index: 1;
   color: rgba(128, 76, 94, 0.76);
   filter: drop-shadow(0 10px 18px rgba(255, 255, 255, 0.4));
+}
+
+.cover-surface__flower {
+  position: relative;
+  z-index: 1;
+  width: min(112px, 48%);
+  max-width: 112px;
+  opacity: 0.94;
+  filter: drop-shadow(0 14px 24px rgba(245, 150, 170, 0.18));
+}
+
+.cover-surface__flower--list {
+  width: min(82px, 54%);
 }
 
 .cover-surface__label {

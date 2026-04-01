@@ -2,7 +2,6 @@ import 'vuetify/lib/styles/main.css'
 import { createVuetify } from 'vuetify'
 import {
   mdiAlertCircleOutline,
-  mdiBookOpenVariantOutline,
   mdiChevronDown,
   mdiCloseCircleOutline,
   mdiContentCopy,
@@ -36,7 +35,6 @@ const iconAliases = {
   applyFilter: mdiFilterOutline,
   closeCircle: mdiCloseCircleOutline,
   language: mdiTranslate,
-  noCover: mdiBookOpenVariantOutline,
   coverMissing: mdiImageOffOutline,
 }
 
